@@ -1,1 +1,106 @@
 <h1>Hello My Name Is Shyam Gupta And I Am Live In Narayan Vihar JJs</h1>
+
+import React, { useState } from "react";
+
+const Practice = () => {
+  const AmenitiesData = [
+    {
+      id: 1,
+      name: "swimming",
+      price: 10000,
+    },
+    {
+      id: 2,
+      name: "Disco",
+      price: 4000,
+    },
+  ];
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+ 
+  const [selectedAmenity, setSelectedAmenity] = useState("");
+  console.log("11111" ,selectedAmenities , selectedAmenity)
+  const [count, setCount] = useState("");
+  const [countError, setCountError] = useState("");
+  const handleAddAmenity = () => {
+    if (!selectedAmenity) setCountError("Please select Amenity");
+    const amenity = AmenitiesData.find(
+      (item) => item.id === parseInt(selectedAmenity)
+    );
+    if (amenity) {
+      const existingAmenity = selectedAmenities.find(
+        (item) => item.id === amenity.id
+      );
+      if (existingAmenity) {
+        setSelectedAmenities(
+          selectedAmenities.map((item) =>
+            item.id === amenity.id ? { ...item, count: count } : item
+          )
+        );
+      } else {
+        setSelectedAmenities([...selectedAmenities, { ...amenity, count }]);
+      }
+    }
+  };
+  const handleRemoveAmenity = (index) => {
+    const data = [...selectedAmenities];
+    data.splice(index, 1);
+    setSelectedAmenities(data);
+    setCount("");
+    setSelectedAmenity("");
+  };
+  const handleCountChange = (e) => {
+    console.log(typeof e.target.value);
+    if (e.target.value.trim() === "") {
+      setCountError("This filed is required");
+    } else if (e.target.value == 0) {
+      return;
+    } else if (!selectedAmenity) {
+      setCountError("Please select Amenity");
+    } else {
+      setCountError("");
+    }
+
+    setCount(e.target.value);
+  };
+  const totalPrice = selectedAmenities.reduce(
+    (acc, item) => acc + item.price * item.count,
+    0
+  );
+  return (
+    <div>
+      <h1>Amenity</h1>
+      <select
+        value={selectedAmenity}
+        onChange={(e) => setSelectedAmenity(e.target.value)}
+      >
+        <option value="" disabled>
+          Select an amenity
+        </option>
+        {AmenitiesData.map((amenity) => (
+          <option key={amenity.id} value={amenity.id}>
+            {amenity.name}
+          </option>
+        ))}
+      </select>
+      <input type="text" value={count} onChange={handleCountChange} />
+      {countError && <p style={{ color: "red" }}>{countError}</p>}
+      <button onClick={handleAddAmenity}>Add/Update Amenity</button>
+
+      <ul>
+        {selectedAmenities.map((amenity, index) => (
+          <li key={amenity.id}>
+            {amenity.name} - {amenity.count} x {amenity.price} ={" "}
+            {amenity.count * amenity.price}
+            <button onClick={() => handleRemoveAmenity(amenity.id, index)}>
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      <h2>Total Price: {totalPrice}</h2>
+    </div>
+  );
+};
+
+export default Practice;
